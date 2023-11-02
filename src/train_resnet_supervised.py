@@ -26,16 +26,26 @@ test_loader = DataLoader(svhn_test, batch_size=32, shuffle=False, pin_memory=Tru
 model = resnet18(weights=None)
 model.fc = Linear(model.fc.in_features, 10)  # SVHN has 10 classes
 
-predictor = LightningClassifier(model)
+classifier = LightningClassifier(model)
+
+checkpoint_callback = ModelCheckpoint(save_weights_only=True, mode="min", monitor="val_loss"),
 
 trainer = pl.Trainer(
     max_epochs=30,
     default_root_dir='./logs/resnet/',
     accelerator=get_device(as_str=True),
     callbacks=[
-        ModelCheckpoint(save_weights_only=True, mode="min", monitor="val_loss"),
+        checkpoint_callback,
         LearningRateMonitor("epoch"),
     ],
 )
 
-trainer.fit(predictor, train_loader)
+trainer.fit(classifier, train_loader)
+
+# Retrieve best model weights
+classifier = LightningClassifier.load_from_checkpoint(checkpoint_callback.best_model_path, model=classifier.model)
+
+results = supervised_trainer.test(classifier, test_loader)
+
+print("Supervised training results:")
+print(results)
