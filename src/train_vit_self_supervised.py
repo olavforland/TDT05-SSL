@@ -28,7 +28,7 @@ predictor = LightningPredictor(vit)
 
 trainer = pl.Trainer(
     max_epochs=10, 
-    default_root_dir='./logs',
+    default_root_dir='./logs/vit/',
     accelerator=get_device(as_str=True),
     callbacks=[
         ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc_top5"),

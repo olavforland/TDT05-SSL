@@ -23,14 +23,14 @@ train_loader = DataLoader(svhn_train, batch_size=32, shuffle=True, pin_memory=Tr
 test_loader = DataLoader(svhn_test, batch_size=32, shuffle=False, pin_memory=True)
 
 
-model = resnet18(pretrained=True)
+model = resnet18(weights=None)
 model.fc = Linear(model.fc.in_features, 10)  # SVHN has 10 classes
 
 predictor = LightningPredictor(model)
 
 trainer = pl.Trainer(
     max_epochs=10,
-    default_root_dir='./logs',
+    default_root_dir='./logs/resnet/',
     accelerator=get_device(as_str=True),
     callbacks=[
         ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc_top5"),
