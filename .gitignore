@@ -6,6 +6,7 @@ __pycache__/
 # Manual additions
 */data/
 .DS_Store
+logs/
 
 
 # C extensions

@@ -1,2 +1,2 @@
 
-from .lightning_predictor import LightningPredictor
+from .lightning_predictor import LightningClassifier

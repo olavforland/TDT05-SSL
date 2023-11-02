@@ -3,15 +3,16 @@ import pytorch_lightning as pl
 
 import torch.nn.functional as F
 
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-class LightningPredictor(pl.LightningModule):
+class LightningClassifier(pl.LightningModule):
     """
     Wrapper class for any model that inherits from nn.Module. 
     Makes it compatible with PyTorch Lightning.
     """
 
     def __init__(self, model):
-        super(LightningPredictor, self).__init__()
+        super(LightningClassifier, self).__init__()
         self.model = model
 
     def forward(self, x):
@@ -38,4 +39,5 @@ class LightningPredictor(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        scheduler = ReduceLearningRateOnPlateau(optimizer, patience=2)
         return optimizer
