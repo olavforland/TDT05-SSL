@@ -35,9 +35,11 @@ class LightningClassifier(pl.LightningModule):
         x, y = batch
         y_hat = self.model(x)
         loss = F.cross_entropy(y_hat, y)
+
         self.log('test_loss', loss)
+        self.log('test_acc', (y_hat.argmax(dim=1) == y).float().mean().item())
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
-        scheduler = ReduceLearningRateOnPlateau(optimizer, patience=2)
+        scheduler = ReduceLROnPlateau(optimizer, patience=2)
         return optimizer

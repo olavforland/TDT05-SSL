@@ -15,10 +15,13 @@ transform = transforms.Compose([
 ])
 
 try:
+
     rotated_svhn_train = RotatedSVHN(root=os.environ['DATA_PATH'], split='train', transform=transform, download=True)
     rotated_svhn_test = RotatedSVHN(root=os.environ['DATA_PATH'], split='test', transform=transform, download=True)
-    svhn_train = SVHN(root=os.environ['DATA_PATH'], split='test', transform=transform, download=True)
+
+    svhn_train = SVHN(root=os.environ['DATA_PATH'], split='train', transform=transform, download=True)
     svhn_test = SVHN(root=os.environ['DATA_PATH'], split='test', transform=transform, download=True)
+
 except KeyError:
     raise Exception('DATA_PATH environment variable not set. Please set it to the path where the SVHN dataset is stored.')
 except:

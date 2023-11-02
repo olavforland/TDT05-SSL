@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 
 from utils import get_device
-from models import LightningPredictor
+from models import LightningClassifier
 from processing import svhn_train, svhn_test
 
 
@@ -26,14 +26,14 @@ test_loader = DataLoader(svhn_test, batch_size=32, shuffle=False, pin_memory=Tru
 model = resnet18(weights=None)
 model.fc = Linear(model.fc.in_features, 10)  # SVHN has 10 classes
 
-predictor = LightningPredictor(model)
+predictor = LightningClassifier(model)
 
 trainer = pl.Trainer(
     max_epochs=10,
     default_root_dir='./logs/resnet/',
     accelerator=get_device(as_str=True),
     callbacks=[
-        ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc_top5"),
+        ModelCheckpoint(save_weights_only=True, mode="min", monitor="val_loss"),
         LearningRateMonitor("epoch"),
     ],
 )
