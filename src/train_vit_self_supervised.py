@@ -81,7 +81,7 @@ supervised_checkpoint = ModelCheckpoint(dirpath=os.environ['CHECKPOINT_PATH'], s
 
 # Train supervised
 supervised_trainer = pl.Trainer(
-    max_epochs=1,
+    max_epochs=10,
     logger=True,
     default_root_dir=os.environ['LOG_PATH'],
     accelerator=get_device(as_str=True),

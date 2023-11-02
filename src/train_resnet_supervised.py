@@ -29,7 +29,7 @@ model.fc = Linear(model.fc.in_features, 10)  # SVHN has 10 classes
 predictor = LightningClassifier(model)
 
 trainer = pl.Trainer(
-    max_epochs=10,
+    max_epochs=30,
     default_root_dir='./logs/resnet/',
     accelerator=get_device(as_str=True),
     callbacks=[
