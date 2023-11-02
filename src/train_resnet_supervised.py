@@ -19,8 +19,8 @@ from models import LightningPredictor
 from processing import svhn_train, svhn_test
 
 
-train_loader = DataLoader(svhn_train, batch_size=64, shuffle=True, pin_memory=True)
-test_loader = DataLoader(svhn_test, batch_size=64, shuffle=False, pin_memory=True)
+train_loader = DataLoader(svhn_train, batch_size=32, shuffle=True, pin_memory=True)
+test_loader = DataLoader(svhn_test, batch_size=32, shuffle=False, pin_memory=True)
 
 
 model = resnet18(pretrained=True)
