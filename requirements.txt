@@ -1,5 +1,5 @@
 ipykernel==6.26.0
-ligtning==2.1.0
+pytorch-lightning==2.1.0
 matplotlib==3.8.0
 numpy==1.26.0
 pandas==2.1.2
