@@ -1,4 +1,6 @@
 import torch
+from torch.utils.data import random_split
+
 
 def get_device(as_str=False):
     device_str = 'cpu'
@@ -10,3 +12,5 @@ def get_device(as_str=False):
     if as_str:
         return device_str
     return torch.device(device_str)
+
+

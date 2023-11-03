@@ -16,19 +16,14 @@ from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 
 from utils import get_device
 from models import LightningClassifier
-from processing import rotated_svhn_train, svhn_train, svhn_test
+from processing import rotated_svhn_train, rotated_svhn_val, svhn_train, svhn_test
 
 
 # ------------- Self-supervised pretraining -------------
 
-# Split train_loader into train and val
-N = len(rotated_svhn_train)
-split = [int(0.8 * N), int(0.2 * N)]
-
-train_dataset, val_dataset, *_ = random_split(rotated_svhn_train, split)
-
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, pin_memory=True)
-val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False, pin_memory=True)
+num_workers = 2
+train_loader = DataLoader(rotated_svhn_train, batch_size=32, num_workers=num_workers, shuffle=True, pin_memory=True)
+val_loader = DataLoader(rotated_svhn_val, batch_size=32, num_workers=num_workers, shuffle=False, pin_memory=True)
 
 
 # One class per rotation
@@ -38,10 +33,11 @@ _ = vit.to(get_device())
 rotation_classifier = LightningClassifier(vit)
 
 
-checkpoint_callback = ModelCheckpoint(dirpath=os.environ['CHECKPOINT_PATH'], save_weights_only=True, mode="min", monitor="val_loss", )
+checkpoint_callback = ModelCheckpoint(dirpath=os.environ['CHECKPOINT_PATH'] + "/vit", save_weights_only=True, mode="min", monitor="val_loss", )
 
 self_supervised_trainer = pl.Trainer(
-    max_epochs=30, 
+    max_epochs=30,
+    num_nodes=2,
     logger=True,
     default_root_dir=os.environ['LOG_PATH'] + '/vit',
     accelerator=get_device(as_str=True),
@@ -57,12 +53,13 @@ self_supervised_trainer.fit(rotation_classifier, train_loader, val_loader)
 # ------------- Supervised finetuning -------------
 
 # Split train_loader into train and val
-N = len(svhn_train)
-split = [int(0.01 * N), int(0.2 * N), N - (int(0.01 * N) + int(0.2 * N))]
+# N = len(svhn_train)
+# split = [int(0.01 * N), int(0.2 * N), N - (int(0.01 * N) + int(0.2 * N))]
+split = [0.01, 0.2, 0.79]
 train_dataset, val_dataset, *_ = random_split(svhn_train, split)
 
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, pin_memory=True)
-val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False, pin_memory=True)
+train_loader = DataLoader(train_dataset, batch_size=32, num_workers=num_workers, shuffle=True, pin_memory=True)
+val_loader = DataLoader(val_dataset, batch_size=32, num_workers=num_workers, shuffle=False, pin_memory=True)
 
 test_loader = DataLoader(svhn_test, batch_size=32, shuffle=False, pin_memory=True)
 
@@ -82,6 +79,7 @@ supervised_checkpoint = ModelCheckpoint(dirpath=os.environ['CHECKPOINT_PATH'], s
 # Train supervised
 supervised_trainer = pl.Trainer(
     max_epochs=10,
+    num_nodes=2,
     logger=True,
     default_root_dir=os.environ['LOG_PATH'],
     accelerator=get_device(as_str=True),

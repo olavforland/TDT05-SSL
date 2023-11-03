@@ -3,6 +3,7 @@ torch
 torchvision
 torchaudio
 pytorch-lightning
+tensorboard
 ipykernel==6.26.0
 matplotlib==3.8.0
 numpy==1.26.0
