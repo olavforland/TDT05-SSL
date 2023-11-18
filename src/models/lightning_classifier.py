@@ -29,8 +29,8 @@ class LightningClassifier(pl.LightningModule):
         loss = F.cross_entropy(y_hat, y)
         self.train_acc(y_hat, y)
 
-        self.log('train_loss', loss, on_step=False, on_epoch=True, sync_dist=True)
-        self.log('train_acc_step', self.train_acc, on_step=True, on_epoch=False, sync_dist=True)
+        self.log('train_loss', loss, on_step=False, on_epoch=True, prog_bar=True, sync_dist=True)
+        self.log('train_acc_step', self.train_acc, on_step=True, on_epoch=False, prog_bar=True, sync_dist=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
